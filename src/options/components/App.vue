@@ -21,6 +21,12 @@
               <small class="settings-warning">⚠️ When data attribute is set, it will take precedence from over other any selector (even ID)</small>
             </div>
             <div class="settings-group">
+              <label class="settings-label">ignore ids</label>
+              <input id="options-code-id-prefix" type="text" v-model.trim="options.code.ignoreIdPrefix" @change="save" placeholder="ignore id prefix">
+              <small>Define a CSS ID prefix that we'll ignore when selecting elements. This is handy
+                when React or Vue based apps generate random class names.</small>
+            </div>
+            <div class="settings-group">
               <label class="settings-label">set key code</label>
               <div class="settings-block">
                 <button class="btn btn-sm btn-primary" @click="listenForKeyCodePress">{{ recordingKeyCodePress ? 'Capturing' : 'Click to capture key code'}}</button>
