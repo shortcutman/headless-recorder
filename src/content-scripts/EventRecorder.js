@@ -12,6 +12,7 @@ export default class EventRecorder {
     this._eventLog = []
     this._previousEvent = null
     this._dataAttribute = null
+    this._ignoreIdPrefix = null
     this._uiController = null
     this._screenShotMode = false
     this._isTopFrame = (window.location === window.parent.location)
@@ -22,9 +23,12 @@ export default class EventRecorder {
     // We need to check the existence of chrome for testing purposes
     if (chrome.storage && chrome.storage.local) {
       chrome.storage.local.get(['options'], ({options}) => {
-        const { dataAttribute } = options ? options.code : {}
+        const { dataAttribute, ignoreIdPrefix } = options ? options.code : {}
         if (dataAttribute) {
           this._dataAttribute = dataAttribute
+        }
+        if (ignoreIdPrefix) {
+          this._ignoreIdPrefix = ignoreIdPrefix
         }
         this._initializeRecorder()
       })
@@ -155,14 +159,15 @@ export default class EventRecorder {
       return `[${this._dataAttribute}="${e.target.getAttribute(this._dataAttribute)}"]`
     }
 
-    if (e.target.id) {
+    if (e.target.id && !e.target.id.startsWith(this._ignoreIdPrefix)) {
       return `#${e.target.id}`
     }
 
     return finder(e.target, {
       seedMinLength: 5,
       optimizedMinLength: (e.target.id) ? 2 : 10,
-      attr: (name, _value) => name === this._dataAttribute
+      attr: (name, _value) => name === this._dataAttribute,
+      idName: (name) => !name.startsWith(this._ignoreIdPrefix)
     })
   }
 
